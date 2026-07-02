@@ -1,0 +1,57 @@
+# Core dependencies
+python-dotenv>=1.0.0
+pydantic>=2.0.0
+pydantic-settings>=2.0.0
+
+# LLM & Agent Framework
+langchain>=0.1.0
+langgraph>=0.1.0
+langsmith>=0.1.0
+
+# LLM Providers
+openai>=1.0.0
+anthropic>=0.7.0
+
+# Vector Database & Embeddings
+chromadb>=0.4.0
+sentence-transformers>=2.2.0
+numpy>=1.24.0
+
+# Gmail & Calendar APIs
+google-auth-oauthlib>=1.0.0
+google-auth-httplib2>=0.2.0
+google-api-python-client>=2.95.0
+
+# Web Framework (Dashboard)
+streamlit>=1.28.0
+streamlit-authenticator>=0.2.3
+
+# Database
+sqlalchemy>=2.0.0
+sqlite3  # Usually comes with Python
+
+# Utilities
+requests>=2.31.0
+aiohttp>=3.9.0
+tenacity>=8.2.0  # For retries
+tiktoken>=0.5.0  # Token counting
+loguru>=0.7.0  # Advanced logging
+
+# Data processing
+pandas>=2.0.0
+pytz>=2023.3
+
+# Testing
+pytest>=7.4.0
+pytest-asyncio>=0.21.0
+pytest-cov>=4.1.0
+
+# Formatting & Linting
+black>=23.7.0
+ruff>=0.0.292
+isort>=5.12.0
+mypy>=1.5.0
+
+# Documentation
+sphinx>=7.0.0
+sphinx-rtd-theme>=1.3.0
