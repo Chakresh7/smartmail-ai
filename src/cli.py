@@ -4,6 +4,7 @@ import sys
 from time import sleep
 
 from src.langgraph.orchestrator import build_default_orchestrator
+from src.tools.gmail_tools import GmailClient
 from src.utils.schemas import EmailData
 
 
@@ -74,9 +75,17 @@ def main(argv=None):
 
     if args.loop:
         interval = int(args.loop)
+        gmail = GmailClient()
         try:
             while True:
-                run_once(orch, sample_email())
+                messages = gmail.fetch_unread_messages(max_results=5, label_ids=["INBOX"])
+                if not messages:
+                    print("No unread messages found.")
+                for message in messages:
+                    raw = gmail.get_message(message["id"])
+                    email = gmail.parse_message(raw)
+                    run_once(orch, email)
+                    gmail.mark_as_read(message["id"])
                 sleep(interval)
         except KeyboardInterrupt:
             print("Stopping loop")
