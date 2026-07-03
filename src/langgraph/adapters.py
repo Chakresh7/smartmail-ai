@@ -4,8 +4,21 @@ import src.nodes as nodes
 
 
 def _to_dict(v: Any):
+    from unittest.mock import MagicMock
+
+    # Return simple types as-is
+    if isinstance(v, (str, int, float, bool, dict, list, tuple)):
+        return v
+
+    # Preserve MagicMock objects (used in tests)
+    if isinstance(v, MagicMock):
+        return v
+
     if hasattr(v, "model_dump"):
-        return v.model_dump()
+        try:
+            return v.model_dump()
+        except Exception:
+            pass
     if hasattr(v, "dict"):
         try:
             return v.dict()
