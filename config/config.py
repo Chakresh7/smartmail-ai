@@ -53,10 +53,18 @@ class Settings(BaseSettings):
         default="./data/vector_db",
         description="Path to Chroma vector database"
     )
+    openai_api_base_url: str = Field(
+        default="",
+        description="OpenAI-compatible API base URL for embeddings"
+    )
     embedding_model: str = Field(
-        default="sentence-transformers/all-MiniLM-L6-v2",
+        default="text-embedding-3-small",
         description="Embedding model for RAG"
-    ) #Need to Update this one here to API Embedding Model.
+    )
+    embedding_batch_size: int = Field(
+        default=32,
+        description="Batch size for embedding API calls"
+    )
     chunk_size: int = Field(default=1000, description="RAG chunk size in tokens")
     chunk_overlap: int = Field(default=100, description="RAG chunk overlap in tokens")
     retrieval_k: int = Field(
