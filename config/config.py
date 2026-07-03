@@ -146,7 +146,7 @@ class Settings(BaseSettings):
         description="Enable automatic reply drafting"
     )
     dry_run_mode: bool = Field(
-        default=False,
+        default=True,
         description="Run in dry-run mode (no actual API calls)"
     )
 

@@ -59,7 +59,14 @@ def classify_email(email: EmailData) -> ClassificationResult:
 	# Attempt real LLM call
 	try:
 		client = OpenAI(api_key=settings.openai_api_key, base_url=settings.openai_api_base_url)
-		resp = client.responses.create(model=settings.llm_model, input=prompt, max_tokens=400)
+		request_kwargs = {
+			"model": settings.llm_model,
+			"input": prompt,
+			"temperature": settings.llm_temperature,
+		}
+		if settings.llm_max_tokens:
+			request_kwargs["max_output_tokens"] = settings.llm_max_tokens
+		resp = client.responses.create(**request_kwargs)
 		text = extract_text_from_response(resp)
 		parsed = safe_json_parse(text, default=None)
 		if parsed:

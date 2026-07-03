@@ -38,7 +38,12 @@ def setup_logging(
     """
     logger = logging.getLogger("smartmail_ai")
     logger.setLevel(getattr(logging, log_level.upper()))
-    
+
+    # Clear handlers to prevent duplicates when setup_logging is called multiple times
+    if logger.handlers:
+        for handler in list(logger.handlers):
+            logger.removeHandler(handler)
+
     # Console handler
     console_handler = logging.StreamHandler()
     console_handler.setLevel(getattr(logging, log_level.upper()))

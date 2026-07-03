@@ -30,7 +30,7 @@ class RAGIndexer:
 
     def __init__(self, collection_name: str = "email_context"):
         self.client = chromadb.Client(
-            Settings=ChromaSettings(
+            settings=ChromaSettings(
                 chroma_db_impl="duckdb+parquet",
                 persist_directory=settings.vector_db_path,
             )

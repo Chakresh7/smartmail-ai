@@ -36,15 +36,26 @@ def generate_reply_draft(email: EmailData, rag_contexts: Optional[List[RAGContex
 
 	try:
 		client = OpenAI(api_key=settings.openai_api_key, base_url=settings.openai_api_base_url)
-		resp = client.responses.create(model=settings.llm_model, input=prompt, max_tokens=500)
+		request_kwargs = {
+			"model": settings.llm_model,
+			"input": prompt,
+			"temperature": settings.llm_temperature,
+		}
+		if settings.llm_max_tokens:
+			request_kwargs["max_output_tokens"] = settings.llm_max_tokens
+		resp = client.responses.create(**request_kwargs)
 		text = extract_text_from_response(resp)
 		# Best-effort parse plain text reply
 		reply_text = None
 		parsed = safe_json_parse(text, default=None)
-		if parsed and isinstance(parsed, str):
-			reply_text = parsed
+		if parsed:
+			if isinstance(parsed, dict):
+				reply_text = parsed.get("reply_text") or parsed.get("reply") or text
+			elif isinstance(parsed, str):
+				reply_text = parsed
+			else:
+				reply_text = text
 		else:
-			# fallback: try to extract any text content
 			reply_text = text
 
 		return ReplyDraft(

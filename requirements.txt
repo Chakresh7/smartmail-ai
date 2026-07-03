@@ -14,7 +14,6 @@ anthropic>=0.7.0
 
 # Vector Database & Embeddings
 chromadb>=0.4.0
-sentence-transformers>=2.2.0
 numpy>=1.24.0
 
 # Gmail & Calendar APIs
@@ -27,8 +26,8 @@ streamlit>=1.28.0
 streamlit-authenticator>=0.2.3
 
 # Database
-sqlalchemy>=2.0.0
-sqlite3  # Usually comes with Python
+sqlalchemy
+# sqlite3  # Usually comes with Python
 
 # Utilities
 requests>=2.31.0
