@@ -247,6 +247,94 @@ def extract_json_objects(text: str) -> List[Dict[str, Any]]:
     return objects
 
 
+def extract_text_from_response(resp: Any) -> str:
+    """Best-effort extractor to obtain textual content from various LLM SDK responses.
+
+    Handles common shapes returned by different SDKs:
+    - New OpenAI Responses objects with `.output` or `.output_text`
+    - Legacy `choices` lists with `text` or `message` fields
+    - Dict-shaped responses
+    - Objects with `choices` attribute
+
+    Falls back to `str(resp)` when shape is unknown.
+    """
+    try:
+        # dict-like responses
+        if isinstance(resp, dict):
+            if "output_text" in resp:
+                return resp["output_text"]
+            if "output" in resp:
+                out = resp["output"]
+                if isinstance(out, list):
+                    parts = []
+                    for item in out:
+                        if isinstance(item, dict) and "content" in item:
+                            for c in item["content"]:
+                                if isinstance(c, dict):
+                                    parts.append(c.get("text", ""))
+                                else:
+                                    parts.append(str(c))
+                        else:
+                            parts.append(str(item))
+                    return "\n".join(parts)
+            if "choices" in resp:
+                parts = []
+                for c in resp.get("choices", []):
+                    if isinstance(c, dict):
+                        if "text" in c:
+                            parts.append(c["text"])
+                        elif "message" in c:
+                            msg = c["message"]
+                            if isinstance(msg, dict):
+                                content = msg.get("content") or ""
+                                if isinstance(content, list):
+                                    for cc in content:
+                                        if isinstance(cc, dict):
+                                            parts.append(cc.get("text", ""))
+                                        else:
+                                            parts.append(str(cc))
+                                else:
+                                    parts.append(str(content))
+                return "\n".join(parts)
+
+        # object-like responses
+        val = getattr(resp, "output_text", None)
+        if isinstance(val, (str, bytes)):
+            return val
+
+        out = getattr(resp, "output", None)
+        if isinstance(out, (list, dict)):
+            if isinstance(out, list):
+                parts = []
+                for item in out:
+                    if isinstance(item, dict) and "content" in item:
+                        for c in item["content"]:
+                            if isinstance(c, dict):
+                                parts.append(c.get("text", ""))
+                            else:
+                                parts.append(str(c))
+                    else:
+                        parts.append(str(item))
+                return "\n".join(parts)
+            return str(out)
+
+        choices_val = getattr(resp, "choices", None)
+        if isinstance(choices_val, (list, tuple)):
+            parts = []
+            for ch in choices_val:
+                if hasattr(ch, "text") and isinstance(getattr(ch, "text"), (str, bytes)):
+                    parts.append(getattr(ch, "text"))
+                elif isinstance(ch, dict) and "text" in ch:
+                    parts.append(ch["text"])
+            if parts:
+                return "\n".join(parts)
+
+        # Fallback
+        return str(resp)
+    except Exception:
+        return str(resp)
+
+
 # ============ Error Handling ============
 class SmartMailException(Exception):
     """Base exception for SmartMail AI."""
